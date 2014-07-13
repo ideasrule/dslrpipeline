@@ -1,13 +1,11 @@
 #!/bin/bash
-for f in *_HAT*
+for f in $1
 do
-    grep -v nan $f > tmpfile
-    numlines=$(wc -l < tmpfile)
+    numlines=$(grep -v nan $f | wc -l)
     if [ $numlines -lt 1000 ]
     then 
 	rm $f
     else
-	awk '{if(NF==61)print;}' tmpfile > $f
-#	mv tmpfile $f
+	grep -v nan $f | awk '{if(NF==61)print;}' > $f
     fi
 done

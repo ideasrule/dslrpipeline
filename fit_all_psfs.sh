@@ -6,7 +6,7 @@ do
 	for dir in RED/10-2014*/
 	do
 	    files=$(grep $dir tmp$mode"$i"_photonly)
-	    python fitpsf.py $i $files &
+	    python fitpsf_fistar.py $files &
 	done
 
     done

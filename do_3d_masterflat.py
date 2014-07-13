@@ -3,14 +3,15 @@ import pyfits
 import random
 import numpy as np
 import os
+import utils
 
 def choose_best_dark(filelist):
     darks=[]
     i=1
+
     while 1==1:
-        filename="masterdark_3d_" + str(i) + ".fits"
-        if os.path.isfile(filename): darks.append(filename)
-        else: break
+        filename="masterdark0_" + str(i) + ".fits"
+        if not os.path.isfile(filename): break
         i += 1
 
     imagetemps = []
@@ -20,55 +21,37 @@ def choose_best_dark(filelist):
 
     min_temp_diff = 1000
     min_dark = None
-    for filename in darks:
+
+    for index in range(1, i):
+        filename = "masterdark0_" + str(index) + ".fits"
         hdu=pyfits.open(filename)[0]
         darktemp = hdu.header["tempmed"]
         diff = abs(darktemp - median_temp)
         if diff < min_temp_diff:
             min_temp_diff = diff
-            min_dark = filename
+            min_dark = index
     return min_dark
 
-masterbias = sys.argv[1]
-output = sys.argv[2]
-filelist = sys.argv[3:]
+outputdir = sys.argv[1]
+filelist = sys.argv[2:]
 if len(filelist)==0: exit(-1)
 
-masterdark = choose_best_dark(filelist)
-biasdata = pyfits.open(masterbias)[0].data
-darkdata = pyfits.open(masterdark)[0].data
+masterdark_index = choose_best_dark(filelist)
 
 tmpfolder = "tmp/flat" + str(random.randint(0,10000000)) + "/"
 os.mkdir(tmpfolder)
 
-for filename in filelist:
-    #decompose into 4 files, pretend they're separate
-    for ch in range(4):
-        basename = os.path.basename(filename)[:-6]
-        newname = tmpfolder + basename + str(ch) + ".fits"
-        call_str = "mcolor.py -c " + str(ch) + " -o " + newname + \
-            " " + filename
-        os.system(call_str)
+utils.split_by_channel(filelist, tmpfolder)
 
 #for each channel, invoke do_masterflat.py
-flatdata = []
+command_queue = []
 for ch in range(4):
-    biasname = tmpfolder + "master_bias" + str(ch) + ".fits"
-    darkname = tmpfolder + "master_dark" + str(ch) + ".fits"
-    flatname = tmpfolder + "master_flat" + str(ch) + ".fits"
-
-    newhdu = pyfits.PrimaryHDU(biasdata[ch])
-    newhdu.writeto(biasname, clobber=True)
-    newhdu.data = darkdata[ch]
-    newhdu.writeto(darkname, clobber=True)
+    biasname = "masterbias" + str(ch) + ".fits"
+    darkname = "masterdark" + str(ch) + "_" + str(masterdark_index) + ".fits"
+    flatname = outputdir + "masterflat" + str(ch) + ".fits"
 
     call_str = "python ~hatuser/HATpipebin/include/HATpipepy/Actions/do_masterflat.py --master-bias=" + biasname + " --master-dark=" + darkname + " " + \
         "HATnet " + tmpfolder + "*_" + str(ch) + ".fits" + " -o " + flatname
+    command_queue.append(call_str)
 
-    print call_str
-    os.system(call_str)
-    chdata = pyfits.open(flatname)[0].data
-    flatdata.append(chdata)
-
-newhdu = pyfits.PrimaryHDU(np.array(flatdata))
-newhdu.writeto(output, clobber=True)
+utils.run_all(command_queue)
