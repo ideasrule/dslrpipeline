@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#make some dirs
+mkdir tmp
+mkdir lightcurves
+mkdir lightcurves/tfa
+
 #first, produce database file
 ./produce_datfile.sh > database_file
 
