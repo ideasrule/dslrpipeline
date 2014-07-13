@@ -1,4 +1,5 @@
 from multiprocessing import Pool
+import os
 
 def run_command(command):
     os.system(command)
