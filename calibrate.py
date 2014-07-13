@@ -38,7 +38,7 @@ def run_ficalib(filelist, darkindex, masterflatdir):
         for filename in filelist:
             basename = os.path.basename(filename)[:-6]
             newname = tmpfolder + basename + str(ch) + ".fits"
-            call_str = "mcolor.py -c " + str(ch) + " -o " + newname + \
+            call_str = "./mcolor.py -c " + str(ch) + " -o " + newname + \
                 " " + filename
             command_queue.append(call_str)
             input_str += " " + newname + " "

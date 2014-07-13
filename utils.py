@@ -15,7 +15,7 @@ def split_by_channel(filelist, targetdir):
         for ch in range(4):
             basename = os.path.basename(filename)[:-6]
             newname = targetdir + "/" + basename + str(ch) + ".fits"
-            call_str = "mcolor.py -c " + str(ch) + " -o " + newname + \
+            call_str = "./mcolor.py -c " + str(ch) + " -o " + newname + \
                 " " + filename
             command_queue.append(call_str)
     run_all(command_queue)
