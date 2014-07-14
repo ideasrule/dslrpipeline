@@ -37,9 +37,9 @@ fiheader --set FILTERS=V RED/10-20140226/10-36139[45]_[03].fits
 fiheader --set FILTERS=R RED/10-20140226/10-36139[45]_2.fits
 fiheader --set FILTERS=B RED/10-20140226/10-36139[45]_1.fits
 
-./multip.py ./magfit_all.sh 0 1 2 3
+./multip.py ./magfit_all113.sh 0 1 2 3
 
-./fit_all_psfs.sh
+./fit_all_psfs113.sh
 
 ./multip.py ./fix_phots_sdk.sh RED/10-2014*/*.phot
 

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+sed -i 's/2masscat_180/2masscat_113/g' magfit?.cfg
+
+files=$(awk '{if($2=="object" && $3=="G18005230_113" && $4=="180" && $5=="0" && $6=="D20")print $1}' database_file)
+
+rm tmp$1
+
+for f in $files
+do
+    fullname=RED/${f%_2.fits}_$1.fits
+    if [ -f ${fullname%.fits}.solved ]
+    then 
+	echo ${fullname%.fits}.phot $fullname >> tmpD$1
+    fi
+done
+
+refname="RED/10-20140226/10-361394"
+
+python ./MagnitudeFitting.py hatnet single $refname"_$1.fits" $refname"_$1.phot" --manual-frame-list tmp$1 --log-config=logging.conf -p 30 --config-file=magfit$1.cfg
+
+awk '{print $1;}' tmp$1 > tmp$1_photonly
+
+python do_masterphotref.py hatnet $refname"_$1.fits" --log-config=logging.conf tmp$1_photonly --config-file=magfit$1.cfg
+
+python ./MagnitudeFitting.py hatnet master $refname"_$1.fits" $refname"_$1.phot" --manual-frame-list tmp$1 --log-config=logging.conf -p 30 --config-file=magfit$1.cfg
+
+done

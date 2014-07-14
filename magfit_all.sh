@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sed -i 's/2masscat_113/2masscat_180/g' magfit?.cfg
+
 D20files=$(awk '{if($2=="object" && $3=="G09363730_180" && $4=="180" && $5=="0" && $6=="D20")print $1}' database_file)
 
 Tfiles=$(awk '{if($2=="object" && $3=="G09363730_180" && $4=="180" && $5=="0" && $6=="T")print $1}' database_file)
