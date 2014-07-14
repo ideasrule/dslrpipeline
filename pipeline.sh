@@ -43,7 +43,7 @@ fiheader --set FILTERS=B RED/10-20140226/10-36139[45]_1.fits
 
 ./multip.py ./fix_phots_sdk.sh RED/10-2014*/*.phot
 
-./lightcurves_all.sh
+./lightcurves_all113.sh
 
 cd lightcurves
 #remove all nan's, remove files with less than 1000 points
