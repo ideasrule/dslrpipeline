@@ -7,9 +7,10 @@ def run_command(command):
 def run_all(command_queue):
     workers = Pool()
     workers.map(run_command, command_queue)
+    workers.close()
     workers.join()
 
-def split_by_channel(filelist, targetdir):
+def split_by_channel(filelist, targetdir, parallel=True):
     command_queue = []
     for filename in filelist:
         for ch in range(4):
@@ -18,4 +19,8 @@ def split_by_channel(filelist, targetdir):
             call_str = "./mcolor.py -c " + str(ch) + " -o " + newname + \
                 " " + filename
             command_queue.append(call_str)
-    run_all(command_queue)
+    if parallel:
+        run_all(command_queue)
+    else:
+        for command in command_queue:
+            os.system(command)

@@ -4,6 +4,7 @@
 mkdir tmp
 mkdir lightcurves
 mkdir lightcurves/tfa
+mkdir RED
 
 #first, produce database file
 ./produce_datfile.sh > database_file

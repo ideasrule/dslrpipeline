@@ -41,10 +41,10 @@ masterdark_index = choose_best_dark(filelist)
 tmpfolder = "tmp/flat" + str(random.randint(0,10000000)) + "/"
 os.mkdir(tmpfolder)
 
-utils.split_by_channel(filelist, tmpfolder)
+utils.split_by_channel(filelist, tmpfolder, False)
 
 #for each channel, invoke do_masterflat.py
-command_queue = []
+#command_queue = []
 for ch in range(4):
     biasname = "masterbias" + str(ch) + ".fits"
     darkname = "masterdark" + str(ch) + "_" + str(masterdark_index) + ".fits"
@@ -52,6 +52,7 @@ for ch in range(4):
 
     call_str = "python ~hatuser/HATpipebin/include/HATpipepy/Actions/do_masterflat.py --master-bias=" + biasname + " --master-dark=" + darkname + " " + \
         "HATnet " + tmpfolder + "*_" + str(ch) + ".fits" + " -o " + flatname
-    command_queue.append(call_str)
+    os.system(call_str)
+#    command_queue.append(call_str)
 
-utils.run_all(command_queue)
+#utils.run_all(command_queue)
